@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido Photocards - Atacado - @m1nnie_sung</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Adicione o SDK do EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        /* Seus estilos CSS existentes aqui */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5e6f8;
+            color: #4a4a4a;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(156, 89, 182, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background-color: #FFD9FF;
+            color: #4a148c;
+            text-align: center;
+            padding: 1rem;
+            border-bottom: 3px solid #9c27b0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo {
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        .header-text {
+            margin-top: 16px;
+            margin-left: 50px;
+            max-width: 600px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            margin: 0 auto;
+            color: #7b1fa2;
+            font-weight: 500;
+        }
+        
+        .cart-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 25px;
+        }
+        
+        .products {
+            flex: 3;
+            min-width: 300px;
+            padding: 20px;
+        }
+        
+        .cart-summary {
+            flex: 2;
+            min-width: 250px;
+            background: #f3e5f5;
+            padding: 25px;
+            border-radius: 12px;
+            position: relative;
+            border: 2px solid #e1bee7;
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.1);
+
+        }
+
+        .product {
+            border: 2px solid #e1bee7;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: rgba(255, 255, 255, 0.8);
+            align-items: flex-start;
+        }
+        
+        #pc {
+            width: 140px;
+            height: 160px;
+            object-fit: fill;
+            background: white;
+            margin-right: 20px;
+            align-self: flex-start;
+        }
+
+        #sticker {
+            width: 120px;
+            height: 100px;
+            padding: 16px;
+            object-fit: fill;
+            background: white;
+            margin-right: 20px;
+            align-self: flex-start;
+        }
+        
+        #filler {
+            width: 120px;
+            height: 120px;
+            padding: 16px;
+            object-fit: fill;
+            background: white;
+            margin-right: 20px;
+            align-self: flex-start;
+        }
+        
+        .product-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(156, 89, 182, 0.2);
+            border-color: #ba68c8;
+        }
+        
+        
+        .product-title {
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            color: #7b1fa2;
+        }
+        
+        .product-description {
+            color: #616161;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: #8e24aa;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .options-container {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .option-group {
+            margin-bottom: 15px;
+        }
+        
+        .option-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #7b1fa2;
+        }
+        
+        .option-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1c4e9;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #7b1fa2;
+            font-weight: 600;
+        }
+        
+        .option-select:focus {
+            border-color: #9c27b0;
+            outline: none;
+        }
+        
+        .quantity {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+        }
+        
+        .quantity-label {
+            margin-right: 12px;
+            font-weight: 600;
+            color: #7b1fa2;
+        }
+        
+        .quantity-input-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .quantity-input {
+            width: 120px;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #d1c4e9;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: #7b1fa2;
+            font-size: 1.1rem;
+        }
+        
+        .quantity-input:focus {
+            border-color: #9c27b0;
+            outline: none;
+        }
+        
+        .quantity-buttons {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .quantity-btn {
+            background: none;
+            border: none;
+            color: #9c27b0;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 5px;
+            line-height: 1;
+        }
+        
+        .quantity-btn:hover {
+            color: #7b1fa2;
+        }
+        
+        .add-to-cart-btn {
+            background: #ba68c8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .add-to-cart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
+            background: #ab47bc;
+        }
+        
+        .add-to-cart-btn i {
+            margin-right: 8px;
+        }
+        
+        .product-comment {
+            width: 100%;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .comment-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #7b1fa2;
+        }
+        
+        .comment-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1c4e9;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 70px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .comment-textarea:focus {
+            border-color: #9c27b0;
+            outline: none;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #7b1fa2;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #d1c4e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            border-color: #9c27b0;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px dashed #d1c4e9;
+        }
+        
+        .total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin: 25px 0;
+            padding-top: 15px;
+            border-top: 3px solid #ba68c8;
+            color: #7b1fa2;
+        }
+        #submit-btn{
+            background: #ba68c8;
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
+        }
+
+         #submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(156, 39, 176, 0.4);
+            background: #ab47bc;
+        }
+        
+        button[type="submit"] {
+            background: #ba68c8;
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
+        }
+        
+        button[type="submit"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(156, 39, 176, 0.4);
+            background: #ab47bc;
+        }
+        
+        button[type="submit"]:active {
+            transform: translateY(1px);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 18px 24px;
+            background: #7b1fa2;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(123, 31, 162, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+        
+        .notification i {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        .cart-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(156, 39, 176, 0.2);
+            border: 2px solid #d1c4e9;
+        }
+        
+        .cart-icon i {
+            font-size: 1.8rem;
+            color: #9c27b0;
+        }
+        
+        .discount-note {
+            font-size: 0.9rem;
+            color: #e91e63;
+            margin-top: 6px;
+            font-style: italic;
+        }
+        
+        .comment-summary {
+            font-style: italic;
+            color: #616161;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #ba68c8;
+            margin-top: 5px;
+        }
+        
+        .price-display {
+            font-weight: bold;
+            color: #8e24aa;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            text-align: center;
+            padding: 8px;
+            background: rgba(243, 229, 245, 0.5);
+            border-radius: 6px;
+            border: 1px dashed #ba68c8;
+        }
+        
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #d1c4e9;
+        }
+        
+        @media (max-width: 768px) {
+            .cart-container {
+                flex-direction: column;
+            }
+            
+            .products, .cart-summary {
+                width: 100%;
+            }
+            
+            .product {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .product-image {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            header {
+                padding: 1.2rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Loading spinner */
+        .loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #9c27b0;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="images/logo.png" alt="Logo" class="logo">
+            </div>
+            
+        </header>
+        <div class="header-text">
+                <h1>Photocards, Fillers & Adesivos Personalizados</h1>
+                <p>Selecione os itens do seu pedido abaixo</p>
+            </div>
+        <div class="cart-container">
+            <div class="products">
+                <div class="product">
+                    <img src="images/pc.png" alt="Photocards" id="pc">
+                    <div class="product-info">
+                        <div class="product-title">Photocards Personalizados</div>
+                        <div class="product-description">Photocards de alta qualidade para sua coleção ou presentear.</div>
+                        <div class="product-price" id="photocard-price">R$ 0,00</div>
+                        
+                        <div class="options-container">
+                            <div class="option-group">
+                                <label class="option-label">Acabamento:</label>
+                                <select class="option-select" id="photocard-finish" onchange="updatePhotocardPrice()">
+                                    <option value="fosco" data-price="1.25" data-price-200="1.05">Fosco (Preço Unitário - R$ 1,25)</option>
+                                    <option value="brilhoso" data-price="1.42" data-price-200="1.32">Brilhoso (Preço Unitário - R$ 1,42)</option>
+                                    <option value="holografico-confete" data-price="1.85" data-price-200="1.62">Holográfico Confete (Preço Unitário - R$ 1,85)</option>
+                                    <option value="holografico-estrela" data-price="1.95" data-price-200="1.75">Holográfico Estrela (Preço Unitário - R$ 1,95)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="quantity">
+                                <span class="quantity-label">Quantidade (mín. 100 unidades):</span>
+                                <div class="quantity-input-container">
+                                    <input type="number" class="quantity-input" id="photocard-quantity" value="100" min="100" step="50" onchange="updatePhotocardPrice()">
+                                    <div class="quantity-buttons">
+                                        <button class="quantity-btn" onclick="changeQuantity('photocard-quantity', 50)">+</button>
+                                        <button class="quantity-btn" onclick="changeQuantity('photocard-quantity', -50)">-</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="add-to-cart-btn" onclick="addToCart('photocard')">
+                                <i class="fas fa-cart-plus"></i> Adicionar ao Carrinho
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-comment" id="comment-photocard">
+                        <label class="comment-label">Comentário (Adicione o link da pasta com as fotos aqui):</label>
+                        <textarea class="comment-textarea" placeholder="Escreva aqui."></textarea>
+                    </div>
+                </div>
+                    <div class="product">
+                    <img src="images/pc.png" alt="Fillers" id="pc">
+                    <div class="product-info">
+                        <div class="product-title">Fillers Personalizados</div>
+                        <div class="product-description">Fillers para completar suas coleções.</div>
+                        <div class="product-price" id="filler-price">R$ 0,00</div>
+                        
+                        <div class="options-container">
+                            <div class="option-group">
+                                <label class="option-label">Tipo de Arte:</label>
+                                <select class="option-select" id="filler-type" onchange="updateFillerPrice()">
+                                    <option value="artes-simples" data-price-base="1.75" data-price-100="1.25" data-price-200="1.10">Artes Simples (Preço Unitário - R$ 1,25)</option>
+                                    <option value="ilustracao" data-price-base="2.65" data-price-100="2.25" data-price-200="2.10">Ilustração (Preço Unitário - R$ 2,25)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="quantity">
+                                <span class="quantity-label">Quantidade (mín. 50 unidades):</span>
+                                <div class="quantity-input-container">
+                                    <input type="number" class="quantity-input" id="filler-quantity" value="50" min="50" step="50" onchange="updateFillerPrice()">
+                                    <div class="quantity-buttons">
+                                        <button class="quantity-btn" onclick="changeQuantity('filler-quantity', 50)">+</button>
+                                        <button class="quantity-btn" onclick="changeQuantity('filler-quantity', -50)">-</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            
+                            <button class="add-to-cart-btn" onclick="addToCart('filler')">
+                                <i class="fas fa-cart-plus"></i> Adicionar ao Carrinho
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-comment" id="comment-filler">
+                        <label class="comment-label">Comentário (Detalhes sobre a arte solicitada):</label>
+                        <textarea class="comment-textarea" placeholder="Descreva a arte que você precisa para os fillers. O preço pode variar dependendo da complexidade."></textarea>
+                    </div>
+                </div>
+                
+                <div class="product">
+                    <img src="images/sticker.png" alt="Adesivos" id="sticker">
+                    <div class="product-info">
+                        <div class="product-title">Adesivos Personalizados - Fosco</div>
+                        <div class="product-description">Adesivos de alta qualidade para decorar seus pertences.</div>
+                        <div class="product-price" id="sticker-price">R$ 0,00</div>
+                        
+                        <div class="options-container">
+                            <div class="option-group">
+                                <label class="option-label">Tamanho:</label>
+                                <select class="option-select" id="sticker-size" onchange="updateStickerPrice()">
+                                    <option value="3x3" data-price="0.35" data-price-200="0.25">Até 3cm x 3cm (Preço Unitário - R$ 0,35)</option>
+                                    <option value="5x5" data-price="0.50" data-price-200="0.40">Até 5cm x 5cm (Preço Unitário - R$ 0,5)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="quantity">
+                                <span class="quantity-label">Quantidade (mín. 50 unidades):</span>
+                                <div class="quantity-input-container">
+                                    <input type="number" class="quantity-input" id="sticker-quantity" value="50" min="50" step="50" onchange="updateStickerPrice()">
+                                    <div class="quantity-buttons">
+                                        <button class="quantity-btn" onclick="changeQuantity('sticker-quantity', 50)">+</button>
+                                        <button class="quantity-btn" onclick="changeQuantity('sticker-quantity', -50)">-</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="add-to-cart-btn" onclick="addToCart('sticker')">
+                                <i class="fas fa-cart-plus"></i> Adicionar ao Carrinho
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-comment" id="comment-sticker">
+                        <label class="comment-label">Comentário (Adicione o link da pasta com as fotos aqui):</label>
+                        <textarea class="comment-textarea" placeholder="Escreva aqui."></textarea>
+                    </div>
+                </div>
+
+            
+                
+                <div class="form-group">
+                    <label for="comments"><i class="fas fa-comments"></i> Instruções Gerais ou Comentários:</label>
+                    <textarea id="comments" name="comments" placeholder="Escreva aqui."></textarea>
+                </div>
+            </div>
+            
+            <div class="cart-summary">
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" style="position: absolute; top: -5px; right: -5px; background: #e91e63; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">0</span>
+                </div>
+                <h2><i class="fas fa-receipt"></i> Resumo do Pedido</h2>
+                
+                <div class="cart-items" id="cart-items">
+                    <p style="text-align: center; color: #9c27b0; font-style: italic;">Seu carrinho está vazio</p>
+                </div>
+                
+                <div class="total">
+                    <span>Total:</span>
+                    <span id="total-price">R$ 0,00</span>
+                    
+                </div>
+                <p style="text-align: center; color: #9c27b0; font-style: italic;">Valor total pode variar dependendo da quantidade e dos tipos de artes.</p>
+                
+                <form id="order-form" method="POST">
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-user"></i> Seu Nome:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-user"></i> Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Seu Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <input type="hidden" name="order_details" id="form-order-details">
+                    <input type="hidden" name="order_total" id="form-total">
+                    <input type="hidden" name="general_comments" id="form-comments">
+                    
+                    <button type="button" onclick="submitOrder()" id="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Finalizar Pedido
+                    </button>
+                    <div class="loader" id="loader"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> Pedido enviado com sucesso!
+    </div>
+
+    <script>
+        // Inicializar EmailJS com sua Public Key
+        // Você precisa se registrar no https://www.emailjs.com e obter sua própria chave
+        emailjs.init("SEU_PUBLIC_KEY_AQUI"); // Substitua pela sua chave pública do EmailJS
+        
+        let cart = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePhotocardPrice();
+            updateStickerPrice();
+            updateFillerPrice();
+            
+            // Add event listeners to comment textareas
+            document.querySelectorAll('.comment-textarea').forEach(textarea => {
+                textarea.addEventListener('input', updateCommentSummaries);
+            });
+        });
+        
+        function changeQuantity(inputId, change) {
+            const input = document.getElementById(inputId);
+            let value = parseInt(input.value) || 0;
+            value += change;
+            
+            const minValue = inputId === 'filler-quantity' ? 50 : 
+                            inputId === 'sticker-quantity' ? 50 : 100;
+            
+            if (value < minValue) value = minValue;
+            input.value = value;
+            
+            if (inputId === 'photocard-quantity') {
+                updatePhotocardPrice();
+            } else if (inputId === 'sticker-quantity') {
+                updateStickerPrice();
+            } else if (inputId === 'filler-quantity') {
+                updateFillerPrice();
+            }
+        }
+        
+        function updatePhotocardPrice() {
+            const finishSelect = document.getElementById('photocard-finish');
+            const selectedOption = finishSelect.options[finishSelect.selectedIndex];
+            const quantity = parseInt(document.getElementById('photocard-quantity').value) || 0;
+            
+            // Definir preço baseado na quantidade
+            let pricePerUnit;
+            if (quantity >= 200) {
+                pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-200'));
+            } else {
+                pricePerUnit = parseFloat(selectedOption.getAttribute('data-price'));
+            }
+            
+            const totalPrice = pricePerUnit * quantity;
+            
+            document.getElementById('photocard-price').textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+            
+            // Atualizar informação de preço unitário
+            const finishText = selectedOption.textContent;
+            const priceInfo = document.querySelector('#photocard-finish option:checked');
+            priceInfo.textContent = finishText.split('(')[0] + `(Preço Unitário - R$ ${pricePerUnit.toFixed(2).replace('.', ',')})`;
+            
+            // Show/hide comment section
+            const commentSection = document.getElementById('comment-photocard');
+            if (quantity > 0) {
+                commentSection.style.display = 'block';
+            } else {
+                commentSection.style.display = 'none';
+            }
+        }
+        
+        function updateStickerPrice() {
+            const sizeSelect = document.getElementById('sticker-size');
+            const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+            const quantity = parseInt(document.getElementById('sticker-quantity').value) || 0;
+            
+            // Definir preço baseado na quantidade
+            let pricePerUnit;
+            if (quantity >= 200) {
+                pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-200'));
+            } else {
+                pricePerUnit = parseFloat(selectedOption.getAttribute('data-price'));
+            }
+            
+            const totalPrice = pricePerUnit * quantity;
+            
+            document.getElementById('sticker-price').textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+            
+            // Atualizar informação de preço unitário
+            const sizeText = selectedOption.textContent;
+            const priceInfo = document.querySelector('#sticker-size option:checked');
+            priceInfo.textContent = sizeText.split('(')[0] + `(Preço Unitário - R$ ${pricePerUnit.toFixed(2).replace('.', ',')})`;
+            
+            // Show/hide comment section
+            const commentSection = document.getElementById('comment-sticker');
+            if (quantity > 0) {
+                commentSection.style.display = 'block';
+            } else {
+                commentSection.style.display = 'none';
+            }
+        }
+        
+        function updateFillerPrice() {
+            const typeSelect = document.getElementById('filler-type');
+            const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+            const quantity = parseInt(document.getElementById('filler-quantity').value) || 0;
+            
+            // Definir preço baseado na quantidade
+            let pricePerUnit;
+            if (quantity >= 200) {
+                pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-200'));
+            } else if (quantity >= 100) {
+                pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-100'));
+            } else {
+                pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-base'));
+            }
+            
+            const totalPrice = pricePerUnit * quantity;
+            
+            document.getElementById('filler-price').textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+            
+            // Atualizar informação de preço unitário
+            const typeText = selectedOption.textContent;
+            const priceInfo = document.querySelector('#filler-type option:checked');
+            priceInfo.textContent = typeText.split('(')[0] + `(Preço Unitário - R$ ${pricePerUnit.toFixed(2).replace('.', ',')})`;
+            
+            // Show/hide comment section
+            const commentSection = document.getElementById('comment-filler');
+            if (quantity > 0) {
+                commentSection.style.display = 'block';
+            } else {
+                commentSection.style.display = 'none';
+            }
+        }
+        
+        function addToCart(productType) {
+            if (productType === 'photocard') {
+                const finishSelect = document.getElementById('photocard-finish');
+                const selectedOption = finishSelect.options[finishSelect.selectedIndex];
+                const finish = selectedOption.text;
+                
+                const quantity = parseInt(document.getElementById('photocard-quantity').value) || 0;
+                
+                // Definir preço baseado na quantidade
+                let pricePerUnit;
+                if (quantity >= 200) {
+                    pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-200'));
+                } else {
+                    pricePerUnit = parseFloat(selectedOption.getAttribute('data-price'));
+                }
+                
+                const totalPrice = pricePerUnit * quantity;
+                
+                const comment = document.querySelector('#comment-photocard textarea').value;
+                
+                cart.push({
+                    type: 'photocard',
+                    finish: finish,
+                    quantity: quantity,
+                    price: totalPrice,
+                    comment: comment,
+                    pricePerUnit: pricePerUnit
+                });
+                
+                showNotification('Photocards adicionados ao carrinho!');
+            } else if (productType === 'sticker') {
+                const sizeSelect = document.getElementById('sticker-size');
+                const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+                const size = selectedOption.text;
+                
+                const quantity = parseInt(document.getElementById('sticker-quantity').value) || 0;
+                
+                // Definir preço baseado na quantidade
+                let pricePerUnit;
+                if (quantity >= 200) {
+                    pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-200'));
+                } else {
+                    pricePerUnit = parseFloat(selectedOption.getAttribute('data-price'));
+                }
+                
+                const totalPrice = pricePerUnit * quantity;
+                
+                const comment = document.querySelector('#comment-sticker textarea').value;
+                
+                cart.push({
+                    type: 'adesivo',
+                    size: size,
+                    quantity: quantity,
+                    price: totalPrice,
+                    comment: comment,
+                    pricePerUnit: pricePerUnit
+                });
+                
+                showNotification('Adesivos adicionados ao carrinho!');
+            } else if (productType === 'filler') {
+                const typeSelect = document.getElementById('filler-type');
+                const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+                const fillerType = selectedOption.text;
+                
+                const quantity = parseInt(document.getElementById('filler-quantity').value) || 0;
+                
+                // Definir preço baseado na quantidade
+                let pricePerUnit;
+                if (quantity >= 200) {
+                    pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-200'));
+                } else if (quantity >= 100) {
+                    pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-100'));
+                } else {
+                    pricePerUnit = parseFloat(selectedOption.getAttribute('data-price-base'));
+                }
+                
+                const totalPrice = pricePerUnit * quantity;
+                
+                const comment = document.querySelector('#comment-filler textarea').value;
+                
+                cart.push({
+                    type: 'filler',
+                    fillerType: fillerType,
+                    quantity: quantity,
+                    price: totalPrice,
+                    comment: comment,
+                    pricePerUnit: pricePerUnit
+                });
+                
+                showNotification('Fillers adicionados ao carrinho!');
+            }
+            
+            updateCart();
+        }
+        
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const totalPriceElement = document.getElementById('total-price');
+            
+            // Update cart count
+            cartCount.textContent = cart.length;
+            
+            // Clear cart items
+            cartItems.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; color: #9c27b0; font-style: italic;">Seu carrinho está vazio</p>';
+                totalPriceElement.textContent = 'R$ 0,00';
+                return;
+            }
+            
+            // Add items to cart
+            let totalPrice = 0;
+            
+            cart.forEach((item, index) => {
+                totalPrice += item.price;
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                
+                let itemText = '';
+                if (item.type === 'photocard') {
+                    itemText = `Photocard ${item.finish} x ${item.quantity} (R$ ${item.pricePerUnit.toFixed(2).replace('.', ',')}/un)`;
+                } else if (item.type === 'adesivo') {
+                    itemText = `Adesivo ${item.size} x ${item.quantity} (R$ ${item.pricePerUnit.toFixed(2).replace('.', ',')}/un)`;
+                } else if (item.type === 'filler') {
+                    itemText = `Filler ${item.fillerType} x ${item.quantity} (R$ ${item.pricePerUnit.toFixed(2).replace('.', ',')}/un)`;
+                }
+                
+                cartItem.innerHTML = `
+                    <div>${itemText}</div>
+                    <div>R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+                    <button onclick="removeFromCart(${index})" style="background: none; border: none; color: #e91e63; cursor: pointer;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                
+                cartItems.appendChild(cartItem);
+            });
+            
+            // Update total price
+            totalPriceElement.textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+        }
+        
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+            showNotification('Item removido do carrinho!');
+        }
+        
+        function generateOrderDetails() {
+            let details = '';
+            
+            cart.forEach(item => {
+                if (item.type === 'photocard') {
+                    details += `Photocard ${item.finish} - Quantidade: ${item.quantity} - Preço Unitário: R$ ${item.pricePerUnit.toFixed(2)} - Preço Total: R$ ${item.price.toFixed(2)}\n`;
+                    if (item.comment) {
+                        details += `Comentário: ${item.comment}\n`;
+                    }
+                } else if (item.type === 'adesivo') {
+                    details += `Adesivo ${item.size} - Quantidade: ${item.quantity} - Preço Unitário: R$ ${item.pricePerUnit.toFixed(2)} - Preço Total: R$ ${item.price.toFixed(2)}\n`;
+                    if (item.comment) {
+                        details += `Comentário: ${item.comment}\n`;
+                    }
+                } else if (item.type === 'filler') {
+                    details += `Filler ${item.fillerType} - Quantidade: ${item.quantity} - Preço Unitário: R$ ${item.pricePerUnit.toFixed(2)} - Preço Total: R$ ${item.price.toFixed(2)}\n`;
+                    if (item.comment) {
+                        details += `Comentário: ${item.comment}\n`;
+                    }
+                }
+                details += '\n';
+            });
+            
+            return details;
+        }
+        
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            notification.classList.add('show');
+            
+            setTimeout(function() {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        function submitOrder() {
+            // Validar se há itens no carrinho
+            if (cart.length === 0) {
+                showNotification('Adicione itens ao carrinho antes de finalizar o pedido!');
+                return;
+            }
+            
+            // Validar dados do formulário
+            const name = document.getElementById('name').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const comments = document.getElementById('comments').value;
+            
+            if (!name || !username || !email) {
+                showNotification('Preencha todos os campos obrigatórios!');
+                return;
+            }
+            
+            // Mostrar loader
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+            
+            // Gerar dados do pedido
+            const orderDetails = generateOrderDetails();
+            const totalPrice = document.getElementById('total-price').textContent;
+            
+            // Preparar dados para envio
+            const templateParams = {
+                to_name: name,
+                to_email: email,
+                from_name: "@m1nnie_sung",
+                order_details: orderDetails,
+                total_price: totalPrice,
+                general_comments: comments,
+                username: username,
+                reply_to: "msungie1nni3@gmail.com"
+            };
+            
+            // Enviar email para o cliente (comprovante)
+            emailjs.send('default_service', 'template_comprovante', templateParams)
+                .then(function(response) {
+                    console.log('Email de comprovante enviado!', response.status, response.text);
+                    
+                    // Enviar também para você (pedido)
+                    const orderTemplateParams = {
+                        to_name: "@m1nnie_sung",
+                        to_email: "msungie1nni3@gmail.com",
+                        from_name: name,
+                        from_email: email,
+                        order_details: orderDetails,
+                        total_price: totalPrice,
+                        general_comments: comments,
+                        username: username
+                    };
+                    
+                    return emailjs.send('default_service', 'template_pedido', orderTemplateParams);
+                })
+                .then(function(response) {
+                    console.log('Email de pedido enviado!', response.status, response.text);
+                    
+                    // Limpar carrinho após envio bem-sucedido
+                    cart = [];
+                    updateCart();
+                    
+                    // Limpar formulário
+                    document.getElementById('order-form').reset();
+                    document.getElementById('comments').value = '';
+                    
+                    // Esconder loader
+                    document.getElementById('submit-btn').style.display = 'block';
+                    document.getElementById('loader').style.display = 'none';
+                    
+                    // Mostrar mensagem de sucesso
+                    showNotification('Pedido enviado com sucesso! Você receberá um comprovante por email.');
+                })
+                .catch(function(error) {
+                    console.error('Erro ao enviar email:', error);
+                    
+                    // Esconder loader
+                    document.getElementById('submit-btn').style.display = 'block';
+                    document.getElementById('loader').style.display = 'none';
+                    
+                    showNotification('Erro ao enviar pedido. Tente novamente.');
+                });
+        }
+    </script>
+
+    
+</body>
+</html>
