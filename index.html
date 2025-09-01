@@ -736,21 +736,27 @@
 
     <script>
 
-        emailjs.init("S2lRYQu-rji1DkPx2W"); 
-        
+        emailjs.init("S2lRYQu-rji1DkPx2W");
+
         let cart = [];
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             updatePhotocardPrice();
             updateStickerPrice();
             updateFillerPrice();
             
-            // Add event listeners to comment textareas
             document.querySelectorAll('.comment-textarea').forEach(textarea => {
-                textarea.addEventListener('input', updateCommentSummaries);
-            });
+                        textarea.addEventListener('input', updateCommentSummaries);
+                    });
         });
-        
+
+        // Adicione esta função que estava faltando
+        function updateCommentSummaries() {
+            // Implementação para atualizar resumos de comentários se necessário
+            console.log("Comentários atualizados");
+        }
+
+      
         function changeQuantity(inputId, change) {
             const input = document.getElementById(inputId);
             let value = parseInt(input.value) || 0;
@@ -1054,90 +1060,91 @@
         }
         
         function submitOrder() {
-            // Validar se há itens no carrinho
-            if (cart.length === 0) {
-                showNotification('Adicione itens ao carrinho antes de finalizar o pedido!');
-                return;
-            }
+    // Validar se há itens no carrinho
+    if (cart.length === 0) {
+        showNotification('Adicione itens ao carrinho antes de finalizar o pedido!');
+        return;
+    }
+
+    // Validar dados do formulário
+    const name = document.getElementById('name').value;
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const comments = document.getElementById('comments').value;
+
+    if (!name || !username || !email) {
+        showNotification('Preencha todos os campos obrigatórios!');
+        return;
+    }
+
+    // Mostrar loader
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('loader').style.display = 'block';
+
+    // Gerar dados do pedido
+    const orderDetails = generateOrderDetails();
+    const totalPrice = document.getElementById('total-price').textContent;
+
+    // Preparar dados para envio - CORREÇÃO AQUI
+    const templateParams = {
+        to_name: name,
+        to_email: email,
+        from_name: "@m1nnie_sung",
+        order_details: orderDetails,
+        total_price: totalPrice,
+        general_comments: comments,
+        username: username,
+        reply_to: email  // Alterado para responder ao cliente
+    };
+
+    // Enviar email para o cliente (comprovante)
+    emailjs.send('default_service', 'template_comprovante', templateParams)
+        .then(function(response) {
+            console.log('Email de comprovante enviado!', response.status, response.text);
             
-            // Validar dados do formulário
-            const name = document.getElementById('name').value;
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const comments = document.getElementById('comments').value;
-            
-            if (!name || !username || !email) {
-                showNotification('Preencha todos os campos obrigatórios!');
-                return;
-            }
-            
-            // Mostrar loader
-            document.getElementById('submit-btn').style.display = 'none';
-            document.getElementById('loader').style.display = 'block';
-            
-            // Gerar dados do pedido
-            const orderDetails = generateOrderDetails();
-            const totalPrice = document.getElementById('total-price').textContent;
-            
-            // Preparar dados para envio
-            const templateParams = {
-                to_name: name,
-                to_email: email,
-                from_name: "@m1nnie_sung",
+            // Preparar dados para email interno - CORREÇÃO AQUI
+            const orderTemplateParams = {
+                to_name: "@m1nnie_sung",
+                to_email: "msungie1nni3@gmail.com",
+                from_name: name,
+                from_email: email,
                 order_details: orderDetails,
                 total_price: totalPrice,
                 general_comments: comments,
                 username: username,
-                reply_to: "msungie1nni3@gmail.com"
+                reply_to: email  // Adicionado para responder ao cliente
             };
             
-            // Enviar email para o cliente (comprovante)
-            emailjs.send('default_service', 'template_comprovante', templateParams)
-                .then(function(response) {
-                    console.log('Email de comprovante enviado!', response.status, response.text);
-                    
-                    // Enviar também para você (pedido)
-                    const orderTemplateParams = {
-                        to_name: "@m1nnie_sung",
-                        to_email: "msungie1nni3@gmail.com",
-                        from_name: name,
-                        from_email: email,
-                        order_details: orderDetails,
-                        total_price: totalPrice,
-                        general_comments: comments,
-                        username: username
-                    };
-                    
-                    return emailjs.send('default_service', 'template_pedido', orderTemplateParams);
-                })
-                .then(function(response) {
-                    console.log('Email de pedido enviado!', response.status, response.text);
-                    
-                    // Limpar carrinho após envio bem-sucedido
-                    cart = [];
-                    updateCart();
-                    
-                    // Limpar formulário
-                    document.getElementById('order-form').reset();
-                    document.getElementById('comments').value = '';
-                    
-                    // Esconder loader
-                    document.getElementById('submit-btn').style.display = 'block';
-                    document.getElementById('loader').style.display = 'none';
-                    
-                    // Mostrar mensagem de sucesso
-                    showNotification('Pedido enviado com sucesso! Você receberá um comprovante por email.');
-                })
-                .catch(function(error) {
-                    console.error('Erro ao enviar email:', error);
-                    
-                    // Esconder loader
-                    document.getElementById('submit-btn').style.display = 'block';
-                    document.getElementById('loader').style.display = 'none';
-                    
-                    showNotification('Erro ao enviar pedido. Tente novamente.');
-                });
-        }
+            return emailjs.send('default_service', 'template_pedido', orderTemplateParams);
+        })
+        .then(function(response) {
+            console.log('Email de pedido enviado!', response.status, response.text);
+            
+            // Limpar carrinho após envio bem-sucedido
+            cart = [];
+            updateCart();
+            
+            // Limpar formulário
+            document.getElementById('order-form').reset();
+            document.getElementById('comments').value = '';
+            
+            // Esconder loader
+            document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('loader').style.display = 'none';
+            
+            // Mostrar mensagem de sucesso
+            showNotification('Pedido enviado com sucesso! Você receberá um comprovante por email.');
+        })
+        .catch(function(error) {
+            console.error('Erro ao enviar email:', error);
+            
+            // Esconder loader
+            document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('loader').style.display = 'none';
+            
+            showNotification('Erro ao enviar pedido. Tente novamente. ' + error.text);
+        });
+}
     </script>
 
     
